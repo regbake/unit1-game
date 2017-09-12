@@ -1,0 +1,26 @@
+body {
+	text-align: center;
+}
+
+#battlefield {
+	height: 600px;
+	width: 900px;
+	border: solid purple;
+	margin: 0 auto;
+}
+
+.playerCards {
+	position: relative;
+	width: auto;
+	height: 49%;
+	border: solid black;
+}
+
+.playerCards div {
+	position: relative;
+	width: 80px;
+	height: 40%;
+	border: solid green;
+	display: inline-block;
+	margin: 20px;
+}
