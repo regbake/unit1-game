@@ -9,6 +9,19 @@ body {
 	margin: 0 auto;
 }
 
+#panel {
+	position: absolute;
+	right: 0;
+	top: 40%;
+	height: 200px;
+	width: 100px;
+	border: solid black;
+}
+
+#playCard {
+	visibility: hidden;
+}
+
 .playerCards {
 	position: relative;
 	width: auto;
@@ -23,4 +36,14 @@ body {
 	border: solid green;
 	display: inline-block;
 	margin: 20px;
+}
+
+#showHand p {
+	display: inline;
+	margin: 10px;
+}
+
+p:hover {
+	color: white;
+	background-color: green;
 }

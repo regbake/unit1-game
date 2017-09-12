@@ -1,7 +1,7 @@
 //initialize the player information
 var player1 = {
 	lifeTotal: 20,
-	isTurn: false,
+	isTurn: true, //player1 always go first
 	manapool: {
 		red: 0,
 		green: 0,
@@ -47,6 +47,8 @@ var player2 = {
 	playLand: false //to keep track of whether played a land that turn
 }; 
 
+var showHand = $("#showHand");
+
 $(function() { //stuff that runs on page load
 	//query the API to get card information
 	var obj = $.getJSON("https://mtgjson.com/json/LEA.json", function() { 
@@ -57,7 +59,46 @@ $(function() { //stuff that runs on page load
 	//create the AI, make it equal to player1
 });
 
-var generateDecks = function() { //generate the player decks, good for now
+//prints cards in hand 
+var displayHand = function() {
+	var hand = player1.cardsInHand; //array of cards
+	for (i=0; i<hand.length; i++) {
+		var thisId = player1.cardsInHand[i].cardId;
+		showHand.append("<p onclick=select(this.id) id="+ thisId +">" + hand[i].name + "</p>");	
+	}
+}
+
+//to display the cards at the bottom of the screen, mouse over the cards and then a larger 
+//image will expand. Clicking the card/name will make give the click properties to the button. 
+//on click of image push that information over to the button (of where to send the on the DOM, card click + button
+//click equals the card changing locations on the DOM and also translating the infoamtion
+//over to the player1.whatever arrays)
+
+var select = function(clickId) { //use buttons on the side of the screen to move cards around
+	$("#playCard").css("visibility", "visible");
+	var selectedCard = clickId; //pass on this selected card ID to the button, call the button function within this function
+
+	$("#playCard").attr("onclick", "clickButton(" + selectedCard + ")");
+	console.log(selectedCard);
+	//add an event handler to this thing? 
+	//$("#playCard").click(clickButton(selectedCard));		//clicking the button to trigger things. 
+}
+
+//to click on the button, send the object into the cardsInPlay array
+//send the card visibly onto the battlefield
+var clickButton = function(param) {
+	var selectedCard = $(param).attr("id");
+	//console.log("button click", selectedCard, param);
+	console.log("button click", selectedCard);
+	
+
+	//how to keep track of all of the card ids? maybe give each card a unique id then make the all equal to each other
+	//move the clicked card from the cardInHand array to the cardInPlay array
+	//move the image from the hand to the battlefield
+
+}
+
+var generateDecks = function() { //generate the player decks, possible to have two IDs of the same...
 	//from the creatures array grab 30 cards randomly, no more than 4 of each card
 	//generate a reasonable amount of lands
 	//push these into an ordered list, Last In First Out
@@ -66,22 +107,30 @@ var generateDecks = function() { //generate the player decks, good for now
 	for (var i=0; i<30; i++) {
 		//console.log(i);
 		var randNum1 = Math.floor(Math.random()*allCreatures.length); //rand creature
-		player1.cardsInDeck.push(allCreatures[randNum1]);
+		var newCard = allCreatures[randNum1]; //random element of Creatures array
+		newCard.cardId = "card" + i; //give card ID
+		player1.cardsInDeck.push(newCard); //push card into deck
 	}
 
 	for (var i=0; i<30; i++) {
 		var randNum2 = Math.floor(Math.random()*allCreatures.length);
+		var newCard = allCreatures[randNum2];
+		newCard.cardId = "card" + i;
 		player2.cardsInDeck.push(allCreatures[randNum2]);
 	}
 	
 	//generate 15 random lands
 	for (var j=0; j<15; j++) {
 		var randNum1 = Math.floor(Math.random()*allLands.length);
+		var newLand = allLands[randNum1];
+		newLand.cardId = "land" + j;
 		player1.cardsInDeck.push(allLands[randNum1]);
 	}
 
 	for (var j=0; j<15; j++) {
 		var randNum2 = Math.floor(Math.random()*allLands.length);
+		var newLand = allLands[randNum2];
+		newLand.cardId = "land" + j;
 		player2.cardsInDeck.push(allLands[randNum2]);
 	}
 
@@ -123,7 +172,6 @@ var generateHands = function() { //generate the player hands, good for now
 	//console.log(player1.cardsInHand);
 	//console.log(player2.cardsInHand);
 }
-
 
 var whoGoesFirst = function() { //don't deal with this for now
 	//look at the first player.cards && player2.cardsInDeck 
@@ -567,4 +615,7 @@ var allCreatures = [{
 
 generateDecks();
 generateHands();
+displayHand();
+
+
 
