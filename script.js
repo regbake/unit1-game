@@ -13,12 +13,10 @@ var player1 = {
 		//name of cards that player has in hand?
 		//feed in the cards here when you first get them
 		//there will be land and creature cards
-	cardsInPlay: {
+	cardsInPlay: [],
 		//creatures that the player has put onto the field
-	},
-	cardsInGraveyard: {
+	cardsInGraveyard: [],
 		//start Empty and will add to as creatures die
-	},
 	cardsInDeck: [],
 	playLand: false //to keep track of whether played a land that turn
 };
@@ -37,12 +35,10 @@ var player2 = {
 		//name of cards that player has in hand?
 		//feed in the cards here when you first get them
 		//there will be land and creature cards
-	cardsInPlay: {
+	cardsInPlay: [],
 		//creatures that the player has put onto the field
-	},
-	cardsInGraveyard: {
+	cardsInGraveyard: [],
 		//start Empty and will add to as creatures die
-	},
 	cardsInDeck: [],
 	playLand: false //to keep track of whether played a land that turn
 }; 
@@ -87,14 +83,27 @@ var select = function(clickId) { //use buttons on the side of the screen to move
 //to click on the button, send the object into the cardsInPlay array
 //send the card visibly onto the battlefield
 var clickButton = function(param) {
+
 	var selectedCard = $(param).attr("id");
-	//console.log("button click", selectedCard, param);
-	console.log("button click", selectedCard);
+	console.log("button click", selectedCard, param);
+	//console.log("button click", selectedCard);
 	
+	$("#placeIt").html(param); //place holder for now, MAKE IT ITERATE AND FIND THE NEXT AVAILABLE SPACE
+
+	//move the object from the person1.cardsInHand to person1.cardsInPlay
+	for (var i=0; i<player1.cardsInHand.length; i++) {
+		if (player1.cardsInHand[i].cardId === selectedCard) {
+			player1.cardsInPlay.push(player1.cardsInHand[i]); //push card to inPlay array
+			player1.cardsInHand.splice(i, 1); //splice out the card
+			break;
+		}
+	}
 
 	//how to keep track of all of the card ids? maybe give each card a unique id then make the all equal to each other
 	//move the clicked card from the cardInHand array to the cardInPlay array
 	//move the image from the hand to the battlefield
+
+	// .remove()/return the element
 
 }
 
