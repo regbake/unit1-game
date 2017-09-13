@@ -67,6 +67,23 @@ var select = function(clickId) { //use buttons on the side of the screen to move
 	$("#playCard").attr("onclick", "clickButton(" + selectedCard + ")");	
 }
 
+var selectOnField = function(idName) {
+	//prints the cardId of the clicked card
+	var selectedDiv = idName;
+	$("#tapCard").attr("onclick", "tapCard(" + selectedDiv + ")");
+}
+
+var tapCard = function(classId) {
+	var selectedId = $(classId).attr("id");
+	if (!($("." + selectedId + "").hasClass("rotated"))) {
+		$("." + selectedId + "").addClass("rotated"); //this works to tap
+		//add mana to the mana pool
+	} else if ($("." + selectedId + "").hasClass("rotated")) {
+		$("." + selectedId + "").removeClass("rotated");
+		//remove the mana
+	}
+}
+
 var endTurn = function() {
 	//find user where isTurn is false, change to true
 	//change the other player isTurn to false 
@@ -83,7 +100,7 @@ var clickButton = function(param) {
 	var currentCard = player1.cardsInHand; //the object of the selected card
 
 	var cardToBattlefield = function() {
-	$(".player1Field").append("<div class="+selectedCard+"></div")
+	$(".player1Field").append("<div class="+selectedCard+" onclick='selectOnField(this.className)'></div")
 	$("."+selectedCard+"").html(param); //INSTEAD OF PASSING PARAM INTO THIS I NEED TO MAKE A NEW ONE WITH NEW ONCLICK VALLUE TO UTILIZE THE TAP ABILITY
 
 		for (var i=0; i<player1.cardsInHand.length; i++) {
