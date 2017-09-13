@@ -75,12 +75,29 @@ var selectOnField = function(idName) {
 
 var tapCard = function(classId) {
 	var selectedId = $(classId).attr("id");
-	if (!($("." + selectedId + "").hasClass("rotated"))) {
-		$("." + selectedId + "").addClass("rotated"); //this works to tap
-		//add mana to the mana pool
-	} else if ($("." + selectedId + "").hasClass("rotated")) {
-		$("." + selectedId + "").removeClass("rotated");
-		//remove the mana
+	//get the cardtype of the card as creature/land
+		//returns {currentCard}, that is being played
+
+	if (~selectedId.indexOf("land")) {
+		//console.log("LAND");
+		if (!($("." + selectedId + "").hasClass("rotated"))) {
+			$("." + selectedId + "").addClass("rotated"); //this works to tap
+			player1.manapool.colorless++;
+			console.log(player1.manapool.colorless);
+		} else if ($("." + selectedId + "").hasClass("rotated")) {
+			$("." + selectedId + "").removeClass("rotated");
+			player1.manapool.colorless--;
+			console.log(player1.manapool.colorless);
+		}
+	} else {
+		//console.log("creature!");
+		//so tapping a creature is the same as attacking...
+		if (!($("." + selectedId + "").hasClass("rotated"))) {
+			$("." + selectedId + "").addClass("rotated"); //this works to tap
+		} else if ($("." + selectedId + "").hasClass("rotated")) {
+			$("." + selectedId + "").removeClass("rotated");
+		}
+
 	}
 }
 
@@ -95,13 +112,11 @@ var clickButton = function(param) {
 	//find the card that has this id attribute and check if the Mana cost is <= the colorless mana
 	var selectedCard = $(param).attr("id"); //the ID of the selected card
 	var newOnclick = param;
-	//maybe change the onclick value here to reflect the new abilities of the card once it's on the battlefield? All it is is tap...
-	console.log(newOnclick);
 	var currentCard = player1.cardsInHand; //the object of the selected card
 
 	var cardToBattlefield = function() {
 	$(".player1Field").append("<div class="+selectedCard+" onclick='selectOnField(this.className)'></div")
-	$("."+selectedCard+"").html(param); //INSTEAD OF PASSING PARAM INTO THIS I NEED TO MAKE A NEW ONE WITH NEW ONCLICK VALLUE TO UTILIZE THE TAP ABILITY
+	$("."+selectedCard+"").html(param); 
 
 		for (var i=0; i<player1.cardsInHand.length; i++) {
 			if (player1.cardsInHand[i].cardId === selectedCard) {
@@ -127,7 +142,7 @@ var clickButton = function(param) {
 	if (currentCard.hasOwnProperty("mana")) {
 		//alert("played a land");
 		cardToBattlefield();
-	} else if (player1.manapool.colorless > currentCard.manaCost.colorless) {
+	} else if (player1.manapool.colorless >= currentCard.manaCost.colorless) {
 		//play creature
 		cardToBattlefield();
 	} else {
@@ -290,34 +305,25 @@ var gameLogic = function() {
 
 //land array
 var allLands = [{
+
 	name: "Swamp",
-	mana: {
-		black: 1
-	}
+	mana: 1
 },
 {
 	name: "Plains",
-	mana: {
-		white: 1
-	}
+	mana: 1
 },
 {
 	name: "Forest",
-	mana: {
-		green: 1
-	}
+	mana: 1
 },
 {
 	name: "Mountain",
-	mana: {
-		red: 1
-	}
+	mana: 1
 },
 {
 	name: "Water",
-	mana: {
-		blue: 1
-	}
+	mana: 1
 }];
 
 //creature array, still need to add the URL information
