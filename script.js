@@ -7,18 +7,14 @@ var player1 = {
 		green: 0,
 		blue: 0,
 		black: 0,
-		white: 0
+		white: 0,
+		colorless: 0
 	},
 	cardsInHand: [],
-		//name of cards that player has in hand?
-		//feed in the cards here when you first get them
-		//there will be land and creature cards
 	cardsInPlay: [],
-		//creatures that the player has put onto the field
 	cardsInGraveyard: [],
-		//start Empty and will add to as creatures die
 	cardsInDeck: [],
-	playLand: false //to keep track of whether played a land that turn
+	playLand: false 
 };
 
 var player2 = {
@@ -29,7 +25,8 @@ var player2 = {
 		green: 0,
 		blue: 0,
 		black: 0,
-		white: 0
+		white: 0,
+		colorless: 0
 	},
 	cardsInHand: [],
 		//name of cards that player has in hand?
@@ -45,7 +42,7 @@ var player2 = {
 
 var showHand = $("#showHand");
 
-$(function() { //stuff that runs on page load
+$(function() { 
 	//query the API to get card information
 	var obj = $.getJSON("https://mtgjson.com/json/LEA.json", function() { 
 	 		//console.log(obj.responseJSON);
@@ -64,47 +61,78 @@ var displayHand = function() {
 	}
 }
 
-//to display the cards at the bottom of the screen, mouse over the cards and then a larger 
-//image will expand. Clicking the card/name will make give the click properties to the button. 
-//on click of image push that information over to the button (of where to send the on the DOM, card click + button
-//click equals the card changing locations on the DOM and also translating the infoamtion
-//over to the player1.whatever arrays)
-
 var select = function(clickId) { //use buttons on the side of the screen to move cards around
 	$("#playCard").css("visibility", "visible");
 	var selectedCard = clickId; //pass on this selected card ID to the button, call the button function within this function
+	$("#playCard").attr("onclick", "clickButton(" + selectedCard + ")");	
+}
 
-	$("#playCard").attr("onclick", "clickButton(" + selectedCard + ")");
-	console.log(selectedCard);
-	//add an event handler to this thing? 
-	//$("#playCard").click(clickButton(selectedCard));		//clicking the button to trigger things. 
+var endTurn = function() {
+	//find user where isTurn is false, change to true
+	//change the other player isTurn to false 
 }
 
 //to click on the button, send the object into the cardsInPlay array
 //send the card visibly onto the battlefield
 var clickButton = function(param) {
+	//find the card that has this id attribute and check if the Mana cost is <= the colorless mana
+	var selectedCard = $(param).attr("id"); //the ID of the selected card
+	var currentCard = player1.cardsInHand; //the object of the selected card
 
-	var selectedCard = $(param).attr("id");
-	console.log("button click", selectedCard, param);
-	//console.log("button click", selectedCard);
-	
+	var cardToBattlefield = function() {
 	$("#placeIt").html(param); //place holder for now, MAKE IT ITERATE AND FIND THE NEXT AVAILABLE SPACE
 
-	//move the object from the person1.cardsInHand to person1.cardsInPlay
-	for (var i=0; i<player1.cardsInHand.length; i++) {
-		if (player1.cardsInHand[i].cardId === selectedCard) {
-			player1.cardsInPlay.push(player1.cardsInHand[i]); //push card to inPlay array
-			player1.cardsInHand.splice(i, 1); //splice out the card
+		for (var i=0; i<player1.cardsInHand.length; i++) {
+			if (player1.cardsInHand[i].cardId === selectedCard) {
+				player1.cardsInPlay.push(player1.cardsInHand[i]); //push card to inPlay array
+				player1.cardsInHand.splice(i, 1); //splice out the card
+				break;
+			}
+		}
+	}
+	
+	//returns {currentCard}, that is being played
+	for (var k=0; k<player1.cardsInHand.length; k++) {
+		var currentCardId = player1.cardsInHand[k].cardId;
+		if (currentCardId === selectedCard) {
+			//the card IDs match
+			var currentCard = currentCard[k];
 			break;
+		} else {
+			//no match
 		}
 	}
 
-	//how to keep track of all of the card ids? maybe give each card a unique id then make the all equal to each other
-	//move the clicked card from the cardInHand array to the cardInPlay array
-	//move the image from the hand to the battlefield
+	if (currentCard.hasOwnProperty("mana")) {
+		//play land
+		alert("played a land");
+		cardToBattlefield();
+	} else if (player1.manapool.colorless > currentCard.manaCost.colorless) {
+		//play creature
+		cardToBattlefield();
+	} else {
+		alert("not enough mana");
+	}
+	
+	//ITERATE AND FIND NEXT OPEN DIV
+	//PUT LANDS INTO A SPECIAL AREA
+	//FIX THE THING ABOUT THE MULTIPLE CARD NAME
 
+	//move the object from the person1.cardsInHand to person1.cardsInPlay
+	
 	// .remove()/return the element
 
+}
+
+var drawCard = function() {
+	if (player1.cardsInHand.length >= 7) {
+		alert("hand size cannot exceed 7 cards");
+	} else {
+		var newCard = player1.cardsInDeck.shift(); //remove the card and store as newCard
+		player1.cardsInHand.push(newCard);
+		showHand.append("<p onclick=select(this.id) id="+ newCard.cardId +">" + newCard.name + "</p>");	
+	}
+	
 }
 
 var generateDecks = function() { //generate the player decks, possible to have two IDs of the same...
@@ -151,6 +179,7 @@ var generateDecks = function() { //generate the player decks, possible to have t
 
 //shuffle function pulled from stackOverflow
 function shuffle(array) {
+
 	var currentIndex = array.length, temporaryValue, randomIndex;
 
 	//while there are elements to shuffle...
@@ -180,12 +209,6 @@ var generateHands = function() { //generate the player hands, good for now
 	}
 	//console.log(player1.cardsInHand);
 	//console.log(player2.cardsInHand);
-}
-
-var whoGoesFirst = function() { //don't deal with this for now
-	//look at the first player.cards && player2.cardsInDeck 
-	//the bigger one will go first
-	// player with bigger.isTurn = true;
 }
 
 var upkeep = function() {
