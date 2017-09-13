@@ -77,13 +77,14 @@ var endTurn = function() {
 var clickButton = function(param) {
 	//find the card that has this id attribute and check if the Mana cost is <= the colorless mana
 	var selectedCard = $(param).attr("id"); //the ID of the selected card
+	var newOnclick = param;
+	//maybe change the onclick value here to reflect the new abilities of the card once it's on the battlefield? All it is is tap...
+	console.log(newOnclick);
 	var currentCard = player1.cardsInHand; //the object of the selected card
 
 	var cardToBattlefield = function() {
-		console.log(param);
-	$(".player1Field").append("<div id="+selectedCard+"Holder></div")
-	$("#"+selectedCard+"Holder").html(param);
-	//html(param); //place holder for now, MAKE IT ITERATE AND FIND THE NEXT AVAILABLE SPACE
+	$(".player1Field").append("<div class="+selectedCard+"></div")
+	$("."+selectedCard+"").html(param); //INSTEAD OF PASSING PARAM INTO THIS I NEED TO MAKE A NEW ONE WITH NEW ONCLICK VALLUE TO UTILIZE THE TAP ABILITY
 
 		for (var i=0; i<player1.cardsInHand.length; i++) {
 			if (player1.cardsInHand[i].cardId === selectedCard) {
