@@ -80,7 +80,10 @@ var clickButton = function(param) {
 	var currentCard = player1.cardsInHand; //the object of the selected card
 
 	var cardToBattlefield = function() {
-	$("#placeIt").html(param); //place holder for now, MAKE IT ITERATE AND FIND THE NEXT AVAILABLE SPACE
+		console.log(param);
+	$(".player1Field").append("<div id="+selectedCard+"Holder></div")
+	$("#"+selectedCard+"Holder").html(param);
+	//html(param); //place holder for now, MAKE IT ITERATE AND FIND THE NEXT AVAILABLE SPACE
 
 		for (var i=0; i<player1.cardsInHand.length; i++) {
 			if (player1.cardsInHand[i].cardId === selectedCard) {
@@ -90,7 +93,7 @@ var clickButton = function(param) {
 			}
 		}
 	}
-	
+
 	//returns {currentCard}, that is being played
 	for (var k=0; k<player1.cardsInHand.length; k++) {
 		var currentCardId = player1.cardsInHand[k].cardId;
@@ -104,8 +107,7 @@ var clickButton = function(param) {
 	}
 
 	if (currentCard.hasOwnProperty("mana")) {
-		//play land
-		alert("played a land");
+		//alert("played a land");
 		cardToBattlefield();
 	} else if (player1.manapool.colorless > currentCard.manaCost.colorless) {
 		//play creature
