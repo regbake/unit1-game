@@ -2,6 +2,20 @@ body {
 	text-align: center;
 }
 
+.hasCard {
+	width: 115px;
+	height: 150px;
+	background-repeat: round;
+	display: inline-block;
+	margin: 15px;
+	border: solid black 2px;
+}
+
+.hasCard:hover {
+	width: 200px;
+	height: 250px;
+}
+
 #battlefield {
 	height: 600px;
 	width: 900px;
@@ -31,8 +45,8 @@ body {
 
 .playerCards div {
 	position: relative;
-	width: 80px;
-	height: 40%;
+	width: 100px;
+	height: 45%;
 	border: solid green;
 	display: inline-block;
 	margin: 20px;
