@@ -130,7 +130,29 @@ var player2Turn = function() {
 	//draw a card on upkeep
 	//play the first land in the hand, if applicable
 	drawCard(player2);
+	playLandAI();
 	endTurnFunc();
+}
+
+var playLandAI = function() {
+	//search hand for land
+	for (i=0; i<player2.cardsInHand.length; i++) {
+		var currCard = player2.cardsInHand[i];
+
+		if (currCard.hasOwnProperty("mana")) {
+			currCard = currCard;
+			//remove card from player2.cardsInHand 
+			player2.cardsInHand.splice(i, 1);
+			player2.cardsInPlay.push(currCard);
+			break;
+		} else {
+			//console.log("mana fck");
+		}
+	}
+	//play the land
+	//player2Field.append(currCard)
+	$(".player2Field").append("<div class='hasCard' style='background-image: url(img/"+ currCard.image + 
+			")' id="+ currCard.cardId +"></div>");
 }
 
 //to click on the button, send the object into the cardsInPlay array
@@ -201,10 +223,7 @@ var drawCard = function(player) {
 			player.cardsInHand.push(newCard);
 			console.log("PLAYER 2 DREW CARD");
 		}
-
 	}
-	
-
 }
 
 var attackFunc = function() {
