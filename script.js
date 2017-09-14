@@ -127,10 +127,13 @@ var endTurnFunc = function() {
 
 var player2Turn = function() {
 	console.log("Player 2 goes...")
+	player2.playLand = false;
 	//draw a card on upkeep
 	//play the first land in the hand, if applicable
+	untapLandsAI();
 	drawCard(player2);
 	playLandAI();
+	playCreatureAI();
 	endTurnFunc();
 }
 
@@ -144,15 +147,58 @@ var playLandAI = function() {
 			//remove card from player2.cardsInHand 
 			player2.cardsInHand.splice(i, 1);
 			player2.cardsInPlay.push(currCard);
+			player2.playLand = true;
 			break;
 		} else {
 			//console.log("mana fck");
 		}
 	}
 	//play the land
-	//player2Field.append(currCard)
 	$(".player2Field").append("<div class='hasCard' style='background-image: url(img/"+ currCard.image + 
 			")' id="+ currCard.cardId +"></div>");
+}
+
+var playCreatureAI = function() {
+	//find how much potential mana
+		//iterate over the creatures in hand
+		//if their mana cost is equal to or less than the potential mana, play the creature
+		//if no creatures found, break
+	//redefine potential mana
+		//iterate over creatures again, if can play creature
+		//if no creatures, break
+	//...
+	var potentialMana = 0;
+	var potentialCreatures = [];
+
+	for (i=0; i<player2.cardsInPlay.length; i++) { //search cardsInPlay for potential mana
+		if (player2.cardsInPlay[i].hasOwnProperty("mana")) {
+			var currCardId = player2.cardsInPlay[i].cardId;
+			$("#"+currCardId+"").addClass("rotated"); //make sure to untap the lands on every new turn start
+			//console.log("found a potential land");
+			potentialMana++;
+		}
+	}
+
+	for (i=0; i<player2.cardsInHand.length; i++) { //search for potential cards
+		if (player2.cardsInHand[i].hasOwnProperty("manaCost") && player2.cardsInHand[i].manaCost <= potentialMana) {
+			//cool, let's play that card
+			var currCard = player2.cardsInHand[i];
+
+			$(".player2Field").append("<div class='hasCard' style='background-image: url(img/"+ currCard.image + 
+			")' id="+ currCard.cardId +"></div>");
+			break;
+		}
+	}
+}
+
+var untapLandsAI = function() {
+	$(".player2Field").children("div").each(function(){
+		//this displays the current div that's on the each Loop
+		if (this.classList.contains("rotated")) {
+			this.classList.remove("rotated");
+			//var currCardId = this.getAttribute("id");
+		}
+	});
 }
 
 //to click on the button, send the object into the cardsInPlay array
@@ -292,19 +338,12 @@ function shuffle(array) {
 }
 
 var generateHands = function() { //generate the player hands, good for now
-//TAKE IN THE GENERATEDECK 
-	//iterate randomly over the all creatures array
-	//place these cards into the player.cardsInHand -- do this p1 and p2 separately
-	//Give 3 lands; 4 creatures
-	//no specific order of cards
 	for (var i=6; i>=0; i--) {
 		var index1 = player1.cardsInDeck.splice(i,1);
 		player1.cardsInHand.push(index1[0]);	
 		var index2 = player2.cardsInDeck.splice(i,1);
 		player2.cardsInHand.push(index2[0]);	
 	}
-	//console.log(player1.cardsInHand);
-	//console.log(player2.cardsInHand);
 }
 
 //finds the card Obj, enter array (player1.array) to search and cardId,  
@@ -380,7 +419,6 @@ var gameLogic = function() {
 
 //land array
 var allLands = [{
-
 	name: "Swamp",
 	mana: 1,
 	image: "swamp.jpg"
@@ -411,10 +449,7 @@ var allCreatures = [{
 	name: "Air Elemental",
 	power: 4,
 	toughness: 4,
-	manaCost: {
-		blue: 2,
-		colorless: 3
-	}, 
+	manaCost: 5, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
@@ -424,10 +459,7 @@ var allCreatures = [{
 	name: "Birds Of Paradise",
 	power: 0,
 	toughness: 1,
-	manaCost: {
-		green: 0,
-		colorless: 1
-	}, 
+	manaCost: 1, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
@@ -437,10 +469,7 @@ var allCreatures = [{
 	name: "Craw Wurm",
 	power: 6,
 	toughness: 4,
-	manaCost: {
-		green: 2,
-		colorless: 4
-	}, 
+	manaCost: 6, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -450,10 +479,7 @@ var allCreatures = [{
 	name: "Earth Elemental",
 	power: 4,
 	toughness: 5,
-	manaCost: {
-		red: 2,
-		colorless: 3
-	}, 
+	manaCost: 5, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -463,10 +489,7 @@ var allCreatures = [{
 	name: "Fire Elemental",
 	power: 5,
 	toughness: 4,
-	manaCost: {
-		red: 2,
-		colorless: 3 
-	}, 
+	manaCost: 5, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -476,10 +499,7 @@ var allCreatures = [{
 	name: "Giant Spider",
 	power: 2,
 	toughness: 4,
-	manaCost: {
-		green: 1,
-		colorless: 3 
-	}, 
+	manaCost: 4, 
 	hasFlying: false,
 	hasReach: true,
 	hasSickness: true,
@@ -490,10 +510,7 @@ var allCreatures = [{
 	name: "Gray Ogre",
 	power: 2,
 	toughness: 2,
-	manaCost: {
-		red: 1,
-		colorless: 2 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -503,10 +520,7 @@ var allCreatures = [{
 	name: "Grizzly Bears",
 	power: 2,
 	toughness: 2,
-	manaCost: {
-		green: 1,
-		colorless: 1 
-	}, 
+	manaCost: 2, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -516,10 +530,7 @@ var allCreatures = [{
 	name: "Hill Giant",
 	power: 3,
 	toughness: 3,
-	manaCost: {
-		red: 1,
-		colorless: 3 
-	}, 
+	manaCost: 4, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -529,10 +540,7 @@ var allCreatures = [{
 	name: "Hurloon Minotaur",
 	power: 2,
 	toughness: 3,
-	manaCost: {
-		red: 2,
-		colorless: 1 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -542,10 +550,7 @@ var allCreatures = [{
 	name: "Ironroot Treefolk",
 	power: 3,
 	toughness: 5,
-	manaCost: {
-		green: 1,
-		colorless: 4 
-	}, 
+	manaCost: 5, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -555,10 +560,7 @@ var allCreatures = [{
 	name: "Mahamoti Djinn",
 	power: 5,
 	toughness: 6,
-	manaCost: {
-		blue: 2,
-		colorless: 4 
-	}, 
+	manaCost: 6, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
@@ -568,10 +570,7 @@ var allCreatures = [{
 	name: "Merfolk Of The Pearl Trident",
 	power: 1,
 	toughness: 1,
-	manaCost: {
-		blue: 1,
-		colorless: 0 
-	}, 
+	manaCost: 1, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -581,10 +580,7 @@ var allCreatures = [{
 	name: "Mons's Goblin Raiders",
 	power: 1,
 	toughness: 1,
-	manaCost: {
-		red: 1,
-		colorless: 0 
-	}, 
+	manaCost: 1, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -594,9 +590,7 @@ var allCreatures = [{
 	name: "Obsianus Golem",
 	power: 4,
 	toughness: 6,
-	manaCost: {
-		colorless: 6, 
-	}, 
+	manaCost: 6, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -606,10 +600,7 @@ var allCreatures = [{
 	name: "Pearled Unicorn",
 	power: 2,
 	toughness: 2,
-	manaCost: {
-		white: 1,
-		colorless: 2 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -619,10 +610,7 @@ var allCreatures = [{
 	name: "Phantom Monster",
 	power: 3,
 	toughness: 3,
-	manaCost: {
-		blue: 1,
-		colorless: 4 
-	}, 
+	manaCost: 5, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
@@ -632,10 +620,7 @@ var allCreatures = [{
 	name: "Roc Of Kher Ridges",
 	power: 3,
 	toughness: 3,
-	manaCost: {
-		red: 1,
-		colorless: 3 
-	}, 
+	manaCost: 4, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: true,
@@ -645,10 +630,7 @@ var allCreatures = [{
 	name: "Savannah Lions",
 	power: 2,
 	toughness: 1,
-	manaCost: {
-		white: 1,
-		colorless: 0 
-	}, 
+	manaCost: 1, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -658,10 +640,7 @@ var allCreatures = [{
 	name: "Scathe Zombies",
 	power: 2,
 	toughness: 2,
-	manaCost: {
-		black: 1,
-		colorless: 2 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasSickness: true,
 	isTapped: false,
@@ -671,10 +650,7 @@ var allCreatures = [{
 	name: "Scryb Sprites",
 	power: 1,
 	toughness: 1,
-	manaCost: {
-		green: 1,
-		colorless: 0
-	}, 
+	manaCost: 1, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
@@ -684,10 +660,7 @@ var allCreatures = [{
 	name: "Serra Angel",
 	power: 4,
 	toughness: 4,
-	manaCost: {
-		white: 2,
-		colorless: 3 
-	}, 
+	manaCost: 5, 
 	hasFlying: true,
 	hasDefender: false,
 	hasVigilance: true,
@@ -699,10 +672,7 @@ var allCreatures = [{
 	name: "Wall Of Air",
 	power: 1,
 	toughness: 5,
-	manaCost: {
-		blue: 2,
-		colorless: 1 
-	}, 
+	manaCost: 3, 
 	hasFlying: true,
 	hasDefender: true,
 	hasSickness: true,
@@ -713,10 +683,7 @@ var allCreatures = [{
 	name: "Wall Of Ice",
 	power: 0,
 	toughness: 7,
-	manaCost: {
-		green: 1,
-		colorless: 2 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasDefender: true,
 	hasSickness: true,
@@ -727,10 +694,7 @@ var allCreatures = [{
 	name: "Wall Of Stone",
 	power: 0,
 	toughness: 8,
-	manaCost: {
-		red: 2,
-		colorless: 1 
-	}, 
+	manaCost: 3, 
 	hasFlying: false,
 	hasDefender: true,
 	hasSickness: true,
@@ -741,10 +705,7 @@ var allCreatures = [{
 	name: "Wall Of Swords",
 	power: 3,
 	toughness: 5,
-	manaCost: {
-		white: 1,
-		colorless:3 
-	}, 
+	manaCost: 4, 
 	hasFlying: true,
 	hasDefender: true,
 	hasSickness: true,
@@ -755,9 +716,7 @@ var allCreatures = [{
 	name: "Wall Of Wood",
 	power: 0,
 	toughness: 3,
-	manaCost: {
-		green: 1,
-	}, 
+	manaCost: 1, 
 	hasFlying: false,
 	hasDefender: true,
 	hasSickness: true,
@@ -768,10 +727,7 @@ var allCreatures = [{
 	name: "Water Elemental",
 	power: 5,
 	toughness: 4,
-	manaCost: {
-		blue: 2,
-		colorless: 3 
-	}, 
+	manaCost: 5, 
 	hasFlying: false,
 	hasDefender: false,
 	hasSickness: true,
