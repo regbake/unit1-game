@@ -81,10 +81,9 @@ var tapCard = function(classId) {
 
 	var currentObj = findCard(player1.cardsInPlay, selectedId);
 
-	if (~selectedId.indexOf("land")) {
-		//console.log("LAND");
+	if (~selectedId.indexOf("land")) { //tapping a land
 		if (!($("#" + selectedId + "").hasClass("rotated"))) {
-			$("#" + selectedId + "").addClass("rotated"); //this works to tap
+			$("#" + selectedId + "").addClass("rotated"); 
 			player1.manapool.colorless++;
 			console.log(player1.manapool.colorless);
 
@@ -93,24 +92,19 @@ var tapCard = function(classId) {
 			player1.manapool.colorless--;
 			console.log(player1.manapool.colorless);
 		}
-	} else {
-		//so tapping a creature is the same as attacking...
-		//EMPLOY ATTACKING LOGIC
-		//make an attack button and on click it'll attack with all of the tapped creatuers. 
-		if (!($("#" + selectedId + "").hasClass("rotated"))) {
-			$("#" + selectedId + "").addClass("rotated"); //this works to tap
+	} else { //tapping creature
+		if (!($("#" + selectedId + "").hasClass("rotated")) && currentObj.hasSickness === false) { //if does not have class rotated && hasSickness is false
+			$("#" + selectedId + "").addClass("rotated"); 
 			currentObj.isTapped = true;
+
+		} else if (!($("#" + selectedId + "").hasClass("rotated"))) {
+			alert("Creature has summoning sickness!")
 
 		} else if ($("#" + selectedId + "").hasClass("rotated")) {
 			$("#" + selectedId + "").removeClass("rotated");
 			currentObj.isTapped = false;
 		}
 	}
-}
-
-var endTurn = function() {
-	//find user where isTurn is false, change to true
-	//change the other player isTurn to false 
 }
 
 //to click on the button, send the object into the cardsInPlay array
@@ -163,7 +157,7 @@ var clickButton = function(param) {
 
 var drawCard = function() {
 	var hand = player1.cardsInHand; //array of cards
-	if (player1.cardsInHand.length >= 7) {
+	if (player1.cardsInHand.length > 7) {
 		alert("hand size cannot exceed 7 cards");
 	} else {
 		var newCard = player1.cardsInDeck.shift(); //remove the card and store as newCard
@@ -171,6 +165,12 @@ var drawCard = function() {
 		showHand.append("<div class='hasCard' style='background-image: url(img/" + newCard.image +
 		")' onclick=select(this.id) id="+ newCard.cardId +"></div>"); //id should equal this.id	
 	}
+
+}
+
+var attackFunc = function() {
+	//what data does this take in?
+	//iterate over the player1.cardsInPlay[] find which cards have the obj.hasOwnProperty
 }
 
 var generateDecks = function() { //generate the player decks, possible to have two IDs of the same...
@@ -249,6 +249,17 @@ var generateHands = function() { //generate the player hands, good for now
 	//console.log(player2.cardsInHand);
 }
 
+//finds the card Obj, enter array (player1.array) to search and cardId,  
+var findCard = function(array, currentId) {
+	for (i=0; i<array.length; i++) {
+		var loopCardId = array[i].cardId;
+		if (loopCardId === currentId) {
+			var currentCard = array[i]; //the object of the matching position
+			return currentCard
+		}
+	}
+}
+
 var upkeep = function() {
 	//FOR player.isTurn = true
 	//move next card from cardsInDeck and place into cardsInHand
@@ -287,6 +298,11 @@ var secondMain = function() {
 	//player.isTurn = false, change the player who has the turn
 }
 
+var endTurn = function() {
+	//find user where isTurn is false, change to true
+	//change the other player isTurn to false 
+}
+
 var gameLogic = function() {
 // 	//start game logic 
 // 	if (player1.lifeTotal > 0 && player2.lifeTotal > 0) {
@@ -302,19 +318,6 @@ var gameLogic = function() {
 // 			console.log("Player 2 wins");
 // 		}
 // 	}
-}
-
-//finds the card Obj, enter array (player1.array) to search and cardId,  
-var findCard = function(array, currentId) {
-	for (i=0; i<array.length; i++) {
-		var loopCardId = array[i].cardId;
-		if (loopCardId === currentId) {
-			var currentCard = array[i]; //the object of the matching position
-			return currentCard
-		}
-
-	}
-
 }
 
 //land array
@@ -355,7 +358,7 @@ var allCreatures = [{
 		colorless: 3
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "air-elemental.jpg"
 },
@@ -368,7 +371,7 @@ var allCreatures = [{
 		colorless: 1
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "birds-of-paradise.jpg"
 },
@@ -381,7 +384,7 @@ var allCreatures = [{
 		colorless: 4
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "craw-wurm.jpg"
 },
@@ -394,7 +397,7 @@ var allCreatures = [{
 		colorless: 3
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "earth-elemental.jpg"
 },
@@ -407,7 +410,7 @@ var allCreatures = [{
 		colorless: 3 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "fire-elemental.jpg"
 },
@@ -421,7 +424,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: false,
 	hasReach: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "giant-spider.jpg"
 },
@@ -434,7 +437,7 @@ var allCreatures = [{
 		colorless: 2 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "gray-ogre.jpg"
 },
@@ -447,7 +450,7 @@ var allCreatures = [{
 		colorless: 1 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "grizzly-bears.jpg"
 },
@@ -460,7 +463,7 @@ var allCreatures = [{
 		colorless: 3 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "hill-giant.jpg"
 },
@@ -473,7 +476,7 @@ var allCreatures = [{
 		colorless: 1 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "hurloon-minotaur.jpg"
 },
@@ -486,7 +489,7 @@ var allCreatures = [{
 		colorless: 4 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "ironroot-treefolk.jpg"
 },
@@ -499,7 +502,7 @@ var allCreatures = [{
 		colorless: 4 
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "mahamoti-djinn.jpg"
 },
@@ -512,7 +515,7 @@ var allCreatures = [{
 		colorless: 0 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "merfolk-of-the-pearl-trident.jpg"
 },
@@ -525,7 +528,7 @@ var allCreatures = [{
 		colorless: 0 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "monss-goblin-raiders.jpg"
 },
@@ -537,7 +540,7 @@ var allCreatures = [{
 		colorless: 6, 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "obsianus-golem.jpg"
 },
@@ -550,7 +553,7 @@ var allCreatures = [{
 		colorless: 2 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "pearled-unicorn.jpg"
 },
@@ -563,7 +566,7 @@ var allCreatures = [{
 		colorless: 4 
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "phantom-monster.jpg"
 },
@@ -576,7 +579,7 @@ var allCreatures = [{
 		colorless: 3 
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: true,
 	image: "roc-of-kher-ridges.jpg"
 },
@@ -589,7 +592,7 @@ var allCreatures = [{
 		colorless: 0 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "savannah-lions.jpg"
 },
@@ -602,7 +605,7 @@ var allCreatures = [{
 		colorless: 2 
 	}, 
 	hasFlying: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "scathe-zombies.jpg"
 },
@@ -615,7 +618,7 @@ var allCreatures = [{
 		colorless: 0
 	}, 
 	hasFlying: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "scryb-sprites.jpg"
 },
@@ -630,7 +633,7 @@ var allCreatures = [{
 	hasFlying: true,
 	hasDefender: false,
 	hasVigilance: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "serra-angel.jpg"
 },
@@ -644,7 +647,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: true,
 	hasDefender: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "wall-of-air.jpg"
 },
@@ -658,7 +661,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: false,
 	hasDefender: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "wall-of-ice.jpg"
 },
@@ -672,7 +675,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: false,
 	hasDefender: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "wall-of-stone.jpg"
 },
@@ -686,7 +689,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: true,
 	hasDefender: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "wall-of-swords.jpg"
 },
@@ -699,7 +702,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: false,
 	hasDefender: true,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "wall-of-wood.jpg"
 },
@@ -713,7 +716,7 @@ var allCreatures = [{
 	}, 
 	hasFlying: false,
 	hasDefender: false,
-	hasSickness: false,
+	hasSickness: true,
 	isTapped: false,
 	image: "water-elemental.jpg"
 }];
