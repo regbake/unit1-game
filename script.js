@@ -58,8 +58,7 @@ var displayHand = function() {
 	for (i=0; i<hand.length; i++) {
 		var thisId = player1.cardsInHand[i].cardId;
 		showHand.append("<div class='hasCard' style='background-image: url(img/"+ hand[i].image + 
-			")'><p onclick=select(this.id) id="+ thisId +">" + hand[i].name + "</p></div>");	
-
+			")' onclick=select(this.id) id="+ thisId +"></div>");	
 	}
 }
 
@@ -84,12 +83,12 @@ var tapCard = function(classId) {
 
 	if (~selectedId.indexOf("land")) {
 		//console.log("LAND");
-		if (!($("." + selectedId + "").hasClass("rotated"))) {
-			$("." + selectedId + "").addClass("rotated"); //this works to tap
+		if (!($("#" + selectedId + "").hasClass("rotated"))) {
+			$("#" + selectedId + "").addClass("rotated"); //this works to tap
 			player1.manapool.colorless++;
 			console.log(player1.manapool.colorless);
-		} else if ($("." + selectedId + "").hasClass("rotated")) {
-			$("." + selectedId + "").removeClass("rotated");
+		} else if ($("#" + selectedId + "").hasClass("rotated")) {
+			$("#" + selectedId + "").removeClass("rotated");
 			player1.manapool.colorless--;
 			console.log(player1.manapool.colorless);
 		}
@@ -97,11 +96,11 @@ var tapCard = function(classId) {
 		//so tapping a creature is the same as attacking...
 		//EMPLOY ATTACKING LOGIC
 
-		if (!($("." + selectedId + "").hasClass("rotated"))) {
-			$("." + selectedId + "").addClass("rotated"); //this works to tap
+		if (!($("#" + selectedId + "").hasClass("rotated"))) {
+			$("#" + selectedId + "").addClass("rotated"); //this works to tap
 			currentObj.isTapped = true;
-		} else if ($("." + selectedId + "").hasClass("rotated")) {
-			$("." + selectedId + "").removeClass("rotated");
+		} else if ($("#" + selectedId + "").hasClass("rotated")) {
+			$("#" + selectedId + "").removeClass("rotated");
 			currentObj.isTapped = false;
 		}
 
@@ -122,8 +121,9 @@ var clickButton = function(param) {
 	var currentCard = player1.cardsInHand; //the object of the selected card
 
 	var cardToBattlefield = function() {
-	$(".player1Field").append("<div class="+selectedCard+" onclick='selectOnField(this.className)'></div")
-	$("."+selectedCard+"").html(param); 
+	$(".player1Field").append(param);
+	$("#"+selectedCard+"").prop("onclick", null);
+	$("#"+selectedCard+"").attr("onclick", "selectOnField(this.id)");
 
 		for (var i=0; i<player1.cardsInHand.length; i++) {
 			if (player1.cardsInHand[i].cardId === selectedCard) {
