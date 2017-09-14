@@ -87,6 +87,7 @@ var tapCard = function(classId) {
 			$("#" + selectedId + "").addClass("rotated"); //this works to tap
 			player1.manapool.colorless++;
 			console.log(player1.manapool.colorless);
+
 		} else if ($("#" + selectedId + "").hasClass("rotated")) {
 			$("#" + selectedId + "").removeClass("rotated");
 			player1.manapool.colorless--;
@@ -95,15 +96,15 @@ var tapCard = function(classId) {
 	} else {
 		//so tapping a creature is the same as attacking...
 		//EMPLOY ATTACKING LOGIC
-
+		//make an attack button and on click it'll attack with all of the tapped creatuers. 
 		if (!($("#" + selectedId + "").hasClass("rotated"))) {
 			$("#" + selectedId + "").addClass("rotated"); //this works to tap
 			currentObj.isTapped = true;
+
 		} else if ($("#" + selectedId + "").hasClass("rotated")) {
 			$("#" + selectedId + "").removeClass("rotated");
 			currentObj.isTapped = false;
 		}
-
 	}
 }
 
@@ -115,7 +116,7 @@ var endTurn = function() {
 //to click on the button, send the object into the cardsInPlay array
 //send the card visibly onto the battlefield
 var clickButton = function(param) {
-	//find the card that has this id attribute and check if the Mana cost is <= the colorless mana
+//find the card that has this id attribute and check if the Mana cost is <= the colorless mana
 	var selectedCard = $(param).attr("id"); //the ID of the selected card
 	var newOnclick = param;
 	var currentCard = player1.cardsInHand; //the object of the selected card
@@ -155,26 +156,21 @@ var clickButton = function(param) {
 	} else {
 		alert("not enough mana");
 	}
-	
-	//ITERATE AND FIND NEXT OPEN DIV
-	//PUT LANDS INTO A SPECIAL AREA
-	//FIX THE THING ABOUT THE MULTIPLE CARD NAME
 
-	//move the object from the person1.cardsInHand to person1.cardsInPlay
-	
+	//FIX THE THING ABOUT THE MULTIPLE CARD NAME	
 	// .remove()/return the element
-
 }
 
 var drawCard = function() {
+	var hand = player1.cardsInHand; //array of cards
 	if (player1.cardsInHand.length >= 7) {
 		alert("hand size cannot exceed 7 cards");
 	} else {
 		var newCard = player1.cardsInDeck.shift(); //remove the card and store as newCard
 		player1.cardsInHand.push(newCard);
-		showHand.append("<p onclick=select(this.id) id="+ newCard.cardId +">" + newCard.name + "</p>");	
+		showHand.append("<div class='hasCard' style='background-image: url(img/" + newCard.image +
+		")' onclick=select(this.id) id="+ newCard.cardId +"></div>"); //id should equal this.id	
 	}
-	
 }
 
 var generateDecks = function() { //generate the player decks, possible to have two IDs of the same...
@@ -368,7 +364,8 @@ var allCreatures = [{
 	power: 0,
 	toughness: 1,
 	manaCost: {
-		green: 0
+		green: 0,
+		colorless: 1
 	}, 
 	hasFlying: true,
 	hasSickness: false,
