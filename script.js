@@ -41,6 +41,7 @@ var player2 = {
 }; 
 
 var showHand = $("#showHand");
+var player1TurnCount = 1;
 
 $(function() { 
 	//query the API to get card information
@@ -107,6 +108,31 @@ var tapCard = function(classId) {
 	}
 }
 
+var endTurnFunc = function() {
+	if (player1.isTurn === true) {
+		player1.isTurn = false;
+		player2.isTurn = true;
+		alert("End player1 turn, player 2 start upkeep");
+		player1TurnCount++;
+		return player2Turn();
+	} else {
+		player2.isTurn = false;
+		player1.isTurn = true;
+
+		//remove all summoning sickness from creatures
+		//untap the creatures
+		alert("End player2 turn, player 1 start upkeep");
+	}
+}
+
+var player2Turn = function() {
+	console.log("Player 2 goes...")
+	//draw a card on upkeep
+	//play the first land in the hand, if applicable
+	drawCard(player2);
+	endTurnFunc();
+}
+
 //to click on the button, send the object into the cardsInPlay array
 //send the card visibly onto the battlefield
 var clickButton = function(param) {
@@ -155,16 +181,29 @@ var clickButton = function(param) {
 	// .remove()/return the element
 }
 
-var drawCard = function() {
-	var hand = player1.cardsInHand; //array of cards
-	if (player1.cardsInHand.length > 7) {
-		alert("hand size cannot exceed 7 cards");
-	} else {
-		var newCard = player1.cardsInDeck.shift(); //remove the card and store as newCard
-		player1.cardsInHand.push(newCard);
-		showHand.append("<div class='hasCard' style='background-image: url(img/" + newCard.image +
-		")' onclick=select(this.id) id="+ newCard.cardId +"></div>"); //id should equal this.id	
+var drawCard = function(player) {
+	var hand = player.cardsInHand; //array of cards
+	
+	if (player === player1) { //if you're drawing a card as player1
+		if (player.cardsInHand.length > 7) {
+			alert("hand size cannot exceed 7 cards");
+		} else {
+			var newCard = player.cardsInDeck.shift(); //remove the card and store as newCard
+			player.cardsInHand.push(newCard);
+			showHand.append("<div class='hasCard' style='background-image: url(img/" + newCard.image +
+			")' onclick=select(this.id) id="+ newCard.cardId +"></div>"); //id should equal this.id	
+		}	
+	} else { //must be player2
+		if (player.cardsInHand.length > 7 && player1TurnCount > 2) { 
+			console.log("player2 hand size cannot exceed 7 cards");
+		} else {
+			var newCard = player.cardsInDeck.shift(); //remove the card and store as newCard
+			player.cardsInHand.push(newCard);
+			console.log("PLAYER 2 DREW CARD");
+		}
+
 	}
+	
 
 }
 
