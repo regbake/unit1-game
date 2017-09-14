@@ -78,6 +78,8 @@ var tapCard = function(classId) {
 	//get the cardtype of the card as creature/land
 		//returns {currentCard}, that is being played
 
+	var currentObj = findCard(player1.cardsInPlay, selectedId);
+
 	if (~selectedId.indexOf("land")) {
 		//console.log("LAND");
 		if (!($("." + selectedId + "").hasClass("rotated"))) {
@@ -90,12 +92,13 @@ var tapCard = function(classId) {
 			console.log(player1.manapool.colorless);
 		}
 	} else {
-		//console.log("creature!");
 		//so tapping a creature is the same as attacking...
 		if (!($("." + selectedId + "").hasClass("rotated"))) {
 			$("." + selectedId + "").addClass("rotated"); //this works to tap
+			currentObj.isTapped = true;
 		} else if ($("." + selectedId + "").hasClass("rotated")) {
 			$("." + selectedId + "").removeClass("rotated");
+			currentObj.isTapped = false;
 		}
 
 	}
@@ -301,7 +304,18 @@ var gameLogic = function() {
 // 	}
 }
 
-	
+//finds the card Obj, enter array (player1.array) to search and cardId,  
+var findCard = function(array, currentId) {
+	for (i=0; i<array.length; i++) {
+		var loopCardId = array[i].cardId;
+		if (loopCardId === currentId) {
+			var currentCard = array[i]; //the object of the matching position
+			return currentCard
+		}
+
+	}
+
+}
 
 //land array
 var allLands = [{
