@@ -127,10 +127,12 @@ var endTurnFunc = function() {
 
 var player2Turn = function() {
 	console.log("Player 2 goes...")
+	player2.playLand = false;
 	//draw a card on upkeep
 	//play the first land in the hand, if applicable
 	drawCard(player2);
 	playLandAI();
+	playCreatureAI();
 	endTurnFunc();
 }
 
@@ -144,15 +146,26 @@ var playLandAI = function() {
 			//remove card from player2.cardsInHand 
 			player2.cardsInHand.splice(i, 1);
 			player2.cardsInPlay.push(currCard);
+			player2.playLand = true;
 			break;
 		} else {
 			//console.log("mana fck");
 		}
 	}
 	//play the land
-	//player2Field.append(currCard)
 	$(".player2Field").append("<div class='hasCard' style='background-image: url(img/"+ currCard.image + 
 			")' id="+ currCard.cardId +"></div>");
+}
+
+var playCreatureAI = function() {
+	//find how much potential mana
+		//iterate over the creatures in hand
+		//if their mana cost is equal to or less than the potential mana, play the creature
+		//if no creatures found, break
+	//redefine potential mana
+		//iterate over creatures again, if can play creature
+		//if no creatures, break
+	//...
 }
 
 //to click on the button, send the object into the cardsInPlay array
