@@ -113,6 +113,13 @@ var attackFunc = function(classId) {
 	var selectedId = $(classId).attr("id"); //gets id of selected card when Attack is hit
 	var currentObj = findCard(player1.cardsInPlay, selectedId);
 
+	if ($("#"+selectedId+"").hasClass("rotated")) {
+		alert("attacked with " + currentObj.name );	
+	} else {
+		alert("tap before attacking");
+	}
+	
+
 	//currentObj is the obj for the selected card... what do I want to do with this? 
 	
 }
