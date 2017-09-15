@@ -211,21 +211,26 @@ var playCreatureAI = function() {
 		if (player2.cardsInHand[i].hasOwnProperty("manaCost") && player2.cardsInHand[i].manaCost <= potentialMana) {
 			//cool, let's play that card
 			var currCard = player2.cardsInHand[i];
-
 			$(".player2Field").append("<div class='hasCard' style='background-image: url(img/"+ currCard.image + 
 			")' id="+ currCard.cardId +"></div>");
+			currCard = player2.cardsInHand.splice(i, 1); //remove card from hand
+			player2.cardsInPlay.push(currCard[0]);
 			break;
 		}
 	}
 }
 
 var untapLands = function() {
+	//untaps the rotated stuff, remove summoning sickness from the creatures
 	$(".player2Field").children("div").each(function(){
-		//this displays the current div that's on the each Loop
+		var currCardObj = findCard(player2.cardsInPlay, this.id);
+
 		if (this.classList.contains("rotated")) {
 			this.classList.remove("rotated");
-			//var currCardId = this.getAttribute("id");
-		}
+		} else if (currCardObj.hasOwnProperty("hasSickness") === true) {
+			currCardObj.hasSickness = false; 
+			console.log("turned down the sickness");
+		} 
 	});
 }
 
