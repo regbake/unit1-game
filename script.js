@@ -114,14 +114,56 @@ var attackFunc = function(classId) {
 	var currentObj = findCard(player1.cardsInPlay, selectedId);
 
 	if ($("#"+selectedId+"").hasClass("rotated")) {
-		alert("attacked with " + currentObj.name );	
+		alert("attacked with " + currentObj.name);
+		attack(currentObj);	
 	} else {
 		alert("tap before attacking");
 	}
-	
 
 	//currentObj is the obj for the selected card... what do I want to do with this? 
 	
+}
+
+var attack = function(creature) {
+	var power = creature.power;
+	var toughness = creature.toughness;
+	//get player2 creatures
+	for (i=0; i<player2.cardsInPlay.length; i++) {
+		if (!player2.cardsInPlay[i].hasOwnProperty("mana")) { //if card is not a land
+			//console.log("not a land");
+			if (player2.cardsInPlay[i].toughness > power) {
+				console.log("creature2 toughness > creature1 power; creature2 blocks");
+				//nothing happens
+				if (player2.cardsInPlay[i].power > toughness) {
+					console.log("creature2 power > creature1. toughness, creature 1 dies");
+					//creature 1 dies
+				}
+			} else if (player2.cardsInPlay[i].toughness < power) {
+				console.log("no blocking because creature2 would die");
+				player2.lifeTotal -= power;
+				if (player2.cardsInPlay[i].power > toughness) {
+					console.log("block and both creatures die");
+					//both creatures die
+				}
+			} else if (player2.cardsInPlay[i].toughness === power) {
+				if (player2.cardsInPlay[i].power === toughness) {
+					console.log("both creatures die"); 
+				} else {
+					console.log("some other thing idk");
+				}
+			} else {
+				//do damage to player2
+				player2.lifeTotal -= power;
+				console.log("did damage to player");
+			}
+		}
+	}
+	
+	//swinging at the other player
+		//if they do not have any creatures
+			//player2.lifeTotal -= creature.power
+		//if 
+
 }
 
 var endTurnFunc = function() {
@@ -225,9 +267,9 @@ var untapLands = function() {
 	$(".player2Field").children("div").each(function(){
 		var currCardObj = findCard(player2.cardsInPlay, this.id);
 
-		if (this.classList.contains("rotated")) {
+		if (this.classList.contains("rotated")) { //untap
 			this.classList.remove("rotated");
-		} else if (currCardObj.hasOwnProperty("hasSickness") === true) {
+		} else if (currCardObj.hasOwnProperty("hasSickness") === true) { //remove sickness
 			currCardObj.hasSickness = false; 
 			console.log("turned down the sickness");
 		} 
@@ -766,7 +808,6 @@ var allCreatures = [{
 	isTapped: false,
 	image: "water-elemental.jpg"
 }];
-
 
 generateDecks();
 generateHands();
