@@ -109,6 +109,7 @@ var tapCard = function(classId) {
 }
 
 var endTurnFunc = function() {
+
 	if (player1.isTurn === true) {
 		player1.isTurn = false;
 		player2.isTurn = true;
@@ -118,11 +119,24 @@ var endTurnFunc = function() {
 	} else {
 		player2.isTurn = false;
 		player1.isTurn = true;
+	} 
+		//untap the creatures
+	$(".player1Field").children("div").each(function(){
+		if (this.classList.contains("rotated")) {
+			this.classList.remove("rotated");
+		}
+	});
 
 		//remove all summoning sickness from creatures
-		//untap the creatures
-		alert("End player2 turn, player 1 start upkeep");
-	}
+	$(".player1Field").children("div").each(function(){
+		var currCard = findCard(player1.cardsInPlay, this.id);
+		if (currCard.hasSickness) {
+			currCard.hasSickness = false;
+		}
+	});
+
+
+		alert("End player2 turn, player 1 start upkeep");	
 }
 
 var player2Turn = function() {
@@ -130,7 +144,7 @@ var player2Turn = function() {
 	player2.playLand = false;
 	//draw a card on upkeep
 	//play the first land in the hand, if applicable
-	untapLandsAI();
+	untapLands();
 	drawCard(player2);
 	playLandAI();
 	playCreatureAI();
@@ -191,7 +205,7 @@ var playCreatureAI = function() {
 	}
 }
 
-var untapLandsAI = function() {
+var untapLands = function() {
 	$(".player2Field").children("div").each(function(){
 		//this displays the current div that's on the each Loop
 		if (this.classList.contains("rotated")) {
@@ -238,8 +252,9 @@ var clickButton = function(param) {
 	if (currentCard.hasOwnProperty("mana")) {
 		//alert("played a land");
 		cardToBattlefield();
-	} else if (player1.manapool.colorless >= currentCard.manaCost.colorless) {
+	} else if (player1.manapool.colorless >= currentCard.manaCost) {
 		//play creature
+		player1.manapool.colorless = player1.manapool.colorless - currentCard.manaCost;
 		cardToBattlefield();
 	} else {
 		alert("not enough mana");
