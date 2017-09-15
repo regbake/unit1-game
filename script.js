@@ -73,6 +73,7 @@ var selectOnField = function(idName) {
 	//prints the cardId of the clicked card
 	var selectedDiv = idName;
 	$("#tapCard").attr("onclick", "tapCard(" + selectedDiv + ")");
+	$("#attack").attr("onclick", "attackFunc("+ selectedDiv+ ")");
 }
 
 var tapCard = function(classId) {
@@ -108,8 +109,12 @@ var tapCard = function(classId) {
 	}
 }
 
-var endTurnFunc = function() {
+var attackFunc = function(classId) {
+	var selectedId = $(classId).attr("id"); //gets id of selected card when Attack is hit
+	
+}
 
+var endTurnFunc = function() {
 	if (player1.isTurn === true) {
 		player1.isTurn = false;
 		player2.isTurn = true;
@@ -134,7 +139,6 @@ var endTurnFunc = function() {
 			currCard.hasSickness = false;
 		}
 	});
-
 
 		alert("End player2 turn, player 1 start upkeep");	
 }
@@ -285,11 +289,6 @@ var drawCard = function(player) {
 			console.log("PLAYER 2 DREW CARD");
 		}
 	}
-}
-
-var attackFunc = function() {
-	//what data does this take in?
-	//iterate over the player1.cardsInPlay[] find which cards have the obj.hasOwnProperty
 }
 
 var generateDecks = function() { //generate the player decks, possible to have two IDs of the same...
