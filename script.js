@@ -111,6 +111,9 @@ var tapCard = function(classId) {
 
 var attackFunc = function(classId) {
 	var selectedId = $(classId).attr("id"); //gets id of selected card when Attack is hit
+	var currentObj = findCard(player1.cardsInPlay, selectedId);
+
+	//currentObj is the obj for the selected card... what do I want to do with this? 
 	
 }
 
