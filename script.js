@@ -82,7 +82,7 @@ var tapCard = function(classId) {
 
 	var currentObj = findCard(player1.cardsInPlay, selectedId);
 
-	if (~selectedId.indexOf("land")) { //tapping a land
+	if (currentObj.hasOwnProperty("mana")) { //tapping a land
 		if (!($("#" + selectedId + "").hasClass("rotated"))) {
 			$("#" + selectedId + "").addClass("rotated"); 
 			player1.manapool.colorless++;
@@ -283,34 +283,37 @@ var generateDecks = function() { //generate the player decks, possible to have t
 	//push these into an ordered list, Last In First Out
 
 	//generate 30 random Creatures, place into players deck
-	for (var i=0; i<30; i++) {
-		//console.log(i);
+	for (let i=0; i<30; i++) {
 		var randNum1 = Math.floor(Math.random()*allCreatures.length); //rand creature
-		var newCard = allCreatures[randNum1]; //random element of Creatures array
-		newCard.cardId = "card" + i; //give card ID
+		var newCard = JSON.parse(JSON.stringify(allCreatures[randNum1])); //random element of Creatures array
 		player1.cardsInDeck.push(newCard); //push card into deck
 	}
 
-	for (var i=0; i<30; i++) {
+	for (let i=0; i<30; i++) {
 		var randNum2 = Math.floor(Math.random()*allCreatures.length);
-		var newCard = allCreatures[randNum2];
-		newCard.cardId = "card" + i;
-		player2.cardsInDeck.push(allCreatures[randNum2]);
+		var newCard = JSON.parse(JSON.stringify(allCreatures[randNum2]));
+		player2.cardsInDeck.push(newCard);
 	}
 	
 	//generate 15 random lands
-	for (var j=0; j<15; j++) {
+	for (let j=0; j<15; j++) {
 		var randNum1 = Math.floor(Math.random()*allLands.length);
-		var newLand = allLands[randNum1];
-		newLand.cardId = "land" + j;
-		player1.cardsInDeck.push(allLands[randNum1]);
+		var newLand = JSON.parse(JSON.stringify(allLands[randNum1]));
+		player1.cardsInDeck.push(newLand);
 	}
 
-	for (var j=0; j<15; j++) {
+	for (let j=0; j<15; j++) {
 		var randNum2 = Math.floor(Math.random()*allLands.length);
-		var newLand = allLands[randNum2];
-		newLand.cardId = "land" + j;
-		player2.cardsInDeck.push(allLands[randNum2]);
+		var newLand = JSON.parse(JSON.stringify(allLands[randNum2]));
+		player2.cardsInDeck.push(newLand);
+	}
+
+	for (let i=0; i<player1.cardsInDeck.length; i++) {
+		player1.cardsInDeck[i].cardId = "card" + i;
+	}
+
+	for (let i=0; i<player2.cardsInDeck.length; i++) {
+		player2.cardsInDeck[i].cardId = "card" + i;
 	}
 
 	shuffle(player1.cardsInDeck);
