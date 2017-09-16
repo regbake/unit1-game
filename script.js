@@ -1,4 +1,3 @@
-//initialize the player information
 var player1 = {
 	lifeTotal: 20,
 	isTurn: true, //player1 always go first
@@ -29,29 +28,22 @@ var player2 = {
 		colorless: 0
 	},
 	cardsInHand: [],
-		//name of cards that player has in hand?
-		//feed in the cards here when you first get them
-		//there will be land and creature cards
 	cardsInPlay: [],
-		//creatures that the player has put onto the field
 	cardsInGraveyard: [],
-		//start Empty and will add to as creatures die
 	cardsInDeck: [],
-	playLand: false //to keep track of whether played a land that turn
+	playLand: false 
 }; 
 
 var showHand = $("#showHand");
 var player1TurnCount = 1;
 
-$(function() { 
-	//query the API to get card information
-	var obj = $.getJSON("https://mtgjson.com/json/LEA.json", function() { 
-	 		//console.log(obj.responseJSON);
-		});
+var updateLifeTotals = function() {
+	var p1Life = $("#p1Life");
+	var p2Life = $("#p2Life");
 
-	//make the arrays equal
-	//create the AI, make it equal to player1
-});
+	p1Life.text(player1.lifeTotal);
+	p2Life.text(player2.lifeTotal);
+}
 
 //prints cards in hand 
 var displayHand = function() {
@@ -73,7 +65,7 @@ var selectOnField = function(idName) {
 	//prints the cardId of the clicked card
 	var selectedDiv = idName;
 	$("#tapCard").attr("onclick", "tapCard(" + selectedDiv + ")");
-	$("#attack").attr("onclick", "attackFunc("+ selectedDiv+ ")");
+	$("#attack").attr("onclick", "attackFunc(" + selectedDiv + ")");
 }
 
 var tapCard = function(classId) {
@@ -81,18 +73,16 @@ var tapCard = function(classId) {
 	//get the cardtype of the card as creature/land
 		//returns {currentCard}, that is being played
 
-	var currentObj = findCard(player1.cardsInPlay, selectedId);
+	var currentObj = findCard(player1.cardsInPlay, selectedId).obj;
 
 	if (currentObj.hasOwnProperty("mana")) { //tapping a land
 		if (!($("#" + selectedId + "").hasClass("rotated"))) {
 			$("#" + selectedId + "").addClass("rotated"); 
 			player1.manapool.colorless++;
-			console.log(player1.manapool.colorless);
 
 		} else if ($("#" + selectedId + "").hasClass("rotated")) {
 			$("#" + selectedId + "").removeClass("rotated");
 			player1.manapool.colorless--;
-			console.log(player1.manapool.colorless);
 		}
 	} else { //tapping creature
 		if (!($("#" + selectedId + "").hasClass("rotated")) && currentObj.hasSickness === false) { //if does not have class rotated && hasSickness is false
@@ -111,7 +101,7 @@ var tapCard = function(classId) {
 
 var attackFunc = function(classId) {
 	var selectedId = $(classId).attr("id"); //gets id of selected card when Attack is hit
-	var currentObj = findCard(player1.cardsInPlay, selectedId);
+	var currentObj = findCard(player1.cardsInPlay, selectedId).obj;
 
 	if ($("#"+selectedId+"").hasClass("rotated")) {
 		alert("attacked with " + currentObj.name);
@@ -127,43 +117,82 @@ var attackFunc = function(classId) {
 var attack = function(creature) {
 	var power = creature.power;
 	var toughness = creature.toughness;
+	var creature1 = creature.name;
+	var creature1Position = findCard(player1.cardsInPlay, creature.cardId).position;
+
+	
+	console.log(creature1, "attacked with ", power);
+	//check the AI cards in play, does it have any creatures? 
+		//if no creatures then no creatures can block
+			//do damage to the player
+		//if there are creatures, then blocking can potentially be done
+
+	//loop to determine if there are creatures in the AI hand
+	var creatureCheck = function() {
+		 for (j=0; j<player2.cardsInPlay.length; j++) {
+		if (player2.cardsInPlay[j].hasOwnProperty("mana")) {
+		// 		//there was a land
+		// 		console.log("land");
+		} else if (player2.cardsInPlay[j].hasOwnProperty("power")) {
+		 		return true; //a creature was found
+		 	}
+		}
+	}
+
+	if (creatureCheck) { //no creatures to block so deal damage directly
+		player2.lifeTotal -= power;
+		updateLifeTotals();
+	}
+		
+
 	//get player2 creatures
-	for (i=0; i<player2.cardsInPlay.length; i++) {
+	for (i=0; i<player2.cardsInPlay.length; i++) { //right now this attacks all the potential creatures... 
+		var creature2 = player2.cardsInPlay[i].name;
+
 		if (!player2.cardsInPlay[i].hasOwnProperty("mana")) { //if card is not a land
-			//console.log("not a land");
+			//what if the other player only has lands on the field? 
 			if (player2.cardsInPlay[i].toughness > power) {
-				console.log("creature2 toughness > creature1 power; creature2 blocks");
-				//nothing happens
+				console.log(creature2 + "toughness > " + creature1 + " power; " + creature2 + " blocks successfully");
 				if (player2.cardsInPlay[i].power > toughness) {
-					console.log("creature2 power > creature1. toughness, creature 1 dies");
-					//creature 1 dies
+					console.log(creature2 + "power > "+creature1+" toughness, "+creature1+" dies");
+					player1.cardsInPlay.splice(creature1Position, 1); 
+					$("#"+creature.cardId+"").remove();
+					console.log("removed the creature from p1.cardsInPlay");
+					break;
 				}
 			} else if (player2.cardsInPlay[i].toughness < power) {
-				console.log("no blocking because creature2 would die");
+				console.log("no blocking because "+creature2+" would die, p2 takes damage");
 				player2.lifeTotal -= power;
+				break;
 				if (player2.cardsInPlay[i].power > toughness) {
-					console.log("block and both creatures die");
-					//both creatures die
+					console.log("block and both creatures die, no damage done to player");
+					player1.cardsInPlay.splice(creature1Position, 1); 
+					$("#"+creature.cardId+"").remove();
+
+					$("#"+player2.cardsInPlay.cardId+"").remove();
+					player2.cardsInPlay.splice(i, 1);
+					break;
 				}
 			} else if (player2.cardsInPlay[i].toughness === power) {
 				if (player2.cardsInPlay[i].power === toughness) {
-					console.log("both creatures die"); 
-				} else {
-					console.log("some other thing idk");
-				}
+					console.log("both creatures die, no damage to player"); 
+					player1.cardsInPlay.splice(creature1Position, 1); 
+					$("#"+creature.cardId+"").remove();
+					
+					var blockerObj = findCard(player2.cardsInPlay, player2.cardsInPlay[i].cardId).obj;
+					$("#"+blockerObj.cardId+"").remove();
+					player2.cardsInPlay.splice(i, 1);
+					break;
+				} 
 			} else {
 				//do damage to player2
 				player2.lifeTotal -= power;
 				console.log("did damage to player");
+				break;
 			}
 		}
-	}
-	
-	//swinging at the other player
-		//if they do not have any creatures
-			//player2.lifeTotal -= creature.power
-		//if 
-
+	} 
+	updateLifeTotals(); 
 }
 
 var endTurnFunc = function() {
@@ -172,6 +201,7 @@ var endTurnFunc = function() {
 		player2.isTurn = true;
 		alert("End player1 turn, player 2 start upkeep");
 		player1TurnCount++;
+		updateLifeTotals();
 		return player2Turn();
 	} else {
 		player2.isTurn = false;
@@ -186,12 +216,12 @@ var endTurnFunc = function() {
 
 		//remove all summoning sickness from creatures
 	$(".player1Field").children("div").each(function(){
-		var currCard = findCard(player1.cardsInPlay, this.id);
+		var currCard = findCard(player1.cardsInPlay, this.id).obj;
 		if (currCard.hasSickness) {
 			currCard.hasSickness = false;
 		}
 	});
-
+		updateLifeTotals();
 		alert("End player2 turn, player 1 start upkeep");	
 }
 
@@ -229,13 +259,6 @@ var playLandAI = function() {
 }
 
 var playCreatureAI = function() {
-	//find how much potential mana
-		//iterate over the creatures in hand
-		//if their mana cost is equal to or less than the potential mana, play the creature
-		//if no creatures found, break
-	//redefine potential mana
-		//iterate over creatures again, if can play creature
-		//if no creatures, break
 	//...
 	var potentialMana = 0;
 	var potentialCreatures = [];
@@ -265,7 +288,7 @@ var playCreatureAI = function() {
 var untapLands = function() {
 	//untaps the rotated stuff, remove summoning sickness from the creatures
 	$(".player2Field").children("div").each(function(){
-		var currCardObj = findCard(player2.cardsInPlay, this.id);
+		var currCardObj = findCard(player2.cardsInPlay, this.id).obj;
 
 		if (this.classList.contains("rotated")) { //untap
 			this.classList.remove("rotated");
@@ -320,9 +343,6 @@ var clickButton = function(param) {
 	} else {
 		alert("not enough mana");
 	}
-
-	//FIX THE THING ABOUT THE MULTIPLE CARD NAME	
-	// .remove()/return the element
 }
 
 var drawCard = function(player) {
@@ -336,6 +356,7 @@ var drawCard = function(player) {
 			player.cardsInHand.push(newCard);
 			showHand.append("<div class='hasCard' style='background-image: url(img/" + newCard.image +
 			")' onclick=select(this.id) id="+ newCard.cardId +"></div>"); //id should equal this.id	
+			hand = player1.cardsInHand;
 		}	
 	} else { //must be player2
 		if (player.cardsInHand.length > 7 && player1TurnCount > 2) { 
@@ -380,17 +401,15 @@ var generateDecks = function() { //generate the player decks, possible to have t
 	}
 
 	for (let i=0; i<player1.cardsInDeck.length; i++) {
-		player1.cardsInDeck[i].cardId = "card" + i;
+		player1.cardsInDeck[i].cardId = "one" + i;
 	}
 
 	for (let i=0; i<player2.cardsInDeck.length; i++) {
-		player2.cardsInDeck[i].cardId = "card" + i;
+		player2.cardsInDeck[i].cardId = "two" + i;
 	}
 
 	shuffle(player1.cardsInDeck);
 	shuffle(player2.cardsInDeck);
-	//console.log(player1.cardsInDeck);
-	//console.log(player2.cardsInDeck);
 }
 
 //shuffle function pulled from stackOverflow
@@ -425,73 +444,15 @@ var findCard = function(array, currentId) {
 	for (i=0; i<array.length; i++) {
 		var loopCardId = array[i].cardId;
 		if (loopCardId === currentId) {
-			var currentCard = array[i]; //the object of the matching position
-			return currentCard
+			var currentCard = {
+				obj: array[i],
+				position: i 
+			};
+			return currentCard;
 		}
 	}
 }
 
-var upkeep = function() {
-	//FOR player.isTurn = true
-	//move next card from cardsInDeck and place into cardsInHand
-	//cardsOnField.isTapped = false
-}
-
-var firstMain = function() {
-	//Play Land? If yes, player.playLand = true; add the played mana to the board
-	//Play creature? If enough mana in manapool, tap mana; remove creature from cards in hand; add creature to cardsOnField
-	//populate field DIV with the information of the creature that was played
-	//for creatures put onto field, creature.hasSickness = true
-}
-
-var combat = function() {
-	//for player.creaturesInPlay if hasSickness = false,
-	//Assign attackers
-		//attacking creature.isTapped = true
-		//if no blockers at all then otherPlayer.life = otherPlayer.life - attackingCreature.toughness
-			//do damage to defending player
-		//Assign Blockers
-			//if hasCreature.toughness > attackCreature.power 
-				//BLOCK and NO DAMAGE
-			//else if SUM (potential blockers.toughness) > attackingCreature.power
-				//BLOCK and NO DAMAGE
-			//else if (Have Small Blocker) Block with Smallest creature.toughness
-				//Block and Small creature Dies (REMOVE CREATURE FROM GAME)
-					//place creature in player.cardsInGraveyard
-}
-
-var secondMain = function() {
-	//secondmain stuff, same as firstMain?
-		//Play Land? If yes, player.playLand = true; add the played mana to the board
-		//Play creature? If enough mana in manapool, tap mana; remove creature from cards in hand; add creature to cardsOnField
-		//populate field DIV with the information of the creature that was played
-		//for creatures put onto field, creature.hasSickness = true
-	//player.isTurn = false, change the player who has the turn
-}
-
-var endTurn = function() {
-	//find user where isTurn is false, change to true
-	//change the other player isTurn to false 
-}
-
-var gameLogic = function() {
-// 	//start game logic 
-// 	if (player1.lifeTotal > 0 && player2.lifeTotal > 0) {
-// 		//continue to play the game
-// 		upkeep();
-// 		firstMain();
-// 		combat();
-// 		secondMain();
-// 	} else {
-// 		if (player1.lifeTotal > 0) {
-// 			console.log("Player 1 wins");
-// 		} else {
-// 			console.log("Player 2 wins");
-// 		}
-// 	}
-}
-
-//land array
 var allLands = [{
 	name: "Swamp",
 	mana: 1,
@@ -518,7 +479,6 @@ var allLands = [{
 	image: "island.jpg"
 }];
 
-//creature array, still need to add the URL information
 var allCreatures = [{
 	name: "Air Elemental",
 	power: 4,
