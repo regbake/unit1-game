@@ -236,42 +236,71 @@ var player2Turn = function() {
 
 var attackAI = function() {
 	var attackingCreatures = [];
-	//if this is the attack function for the AI, then what shoul dhappen inside it? 
-	//search player2.CardsInPlay.hasOwnProperty("hasDefender")
-	//what's the goal here, we can't attack with defenders, we can't attack with lands
-	
-	//the ai is going to attack with all available creatures on every turn
-	//make an array of attacking creatures? 
+	var attackingNames = [];
+	var potentialBlockers = []; //stores the object of that creature
+	//okay, so what's up here, the creatuers that are going to attack get tapped every turn... and added to the 
+	//attackingCreatures array... 
 
-	//that's the more critical thing that I need to figure out, how the player1 is going to decide blocking and the sort
-
-	//that's kind of the other thing to figure out as well, how am I going to decide about the blocking here? 
-
-	//so it's pretty easy to find out which creatures are going to attack, ever creature that isn't a wall, isn't a land, 
-	//and doesn't have summoning sickness will attack every turn. Right now all of the creatures that fit this criteria will
-	//be put into the array attackingCreatures
-
-	//this isn't a huge deal when it comes to a small amount of creatures, but it seems to me that player1 must to be able to choose 
-	//which creatuers to block
-
-	//funnel for the creatuers that are attack ready
+	//store attacking creatures in array
 	for (i=0; i<player2.cardsInPlay.length; i++) {
 		if (!player2.cardsInPlay[i].hasOwnProperty("hasDefender") && !player2.cardsInPlay[i].hasOwnProperty("mana")) {
 			if (!player2.cardsInPlay[i].hasSickness) {
 				//card doesn't have summoning sickness, defender, or land
 				var currCard = player2.cardsInPlay[i];
-				
 				attackingCreatures.push(currCard);
-				
 				$("#" + currCard.cardId + "").addClass("rotated"); 
-
-
 			}
 		} else {
 			//ignore 
 		}
 	}
+
+	//list out potential blocking creatures, all creatures that are not a land can block
+	for (i=0; i<player1.cardsInPlay.length; i++) {
+		if (player1.cardsInPlay[i].hasOwnProperty("mana")) {
+			//this card is a land
+		} else if (player1.cardsInPlay[i].isTapped) {
+			//card is tapped
+		} else {
+			//should be capable of blocking
+			potentialBlockers.push(player1.cardsInPlay[i]);
+		}
+	}
+
+	//we have this potential blockers array... 
+	//display the creature name: with a radio button at the end of it. 
+	//this satisfies the 1 to 1 blocking thing and allows you to select the creature
+
+	if (attackingCreatures.length > 0) {
+		attackingCreatures.forEach(function(element){
+			attackingNames.push(element.name); //push it to array, why not
+			//update text on every name
+			$("#messages").text(element.name + " is attacking, block with:");
+
+			for (j=0; j<potentialBlockers.length; j++) {
+				$("#messageHolder").append("<input type='radio' name='blockers' value="+potentialBlockers[j].cardId+">" + potentialBlockers[j].name + "<br>");
+				$("#messageHolder").append("<button type='button' id='chooseBlock' onclick=''>Block</button>");
+				$("#messageHolder").append("<button type='button' id='chooseDamage' onclick=''>DoNotBlock</button>");
+			}
+		})
+
+		
+		
+	}	
+		
+	//okay, so at this point we have all of the attack ready creatures tapped, and stored in the array attackingCreatures
+	//so ho
+
 }
+
+// var removeAttacking = function() {
+// 	for (i=0; i<player2.cardsInPlay.length; i++) {
+// 		var currCard = player2.cardsInPlay[i];
+// 		if (currCard.classList.contains("attacking")) {
+
+// 		}
+// 	}
+// }
 
 var playLandAI = function() {
 	//search hand for land

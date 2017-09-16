@@ -27,10 +27,14 @@ body {
 #panel {
 	position: absolute;
 	right: 0;
-	top: 40%;
-	height: 200px;
+	top: 8px;
+	height: 500px;
 	width: 100px;
 	border: solid black;
+}
+
+#panel h1 {
+	margin-bottom: 0px;
 }
 
 #playCard {
@@ -54,7 +58,18 @@ body {
 	vertical-align: top;
 }
 
-.displayLife {
+#messageHolder {
+	position: relative;
+	width: 100%;
+	height: 55%;
+	bottom: 0;
+}
+
+#messages {
+	color: red;
+}
+
+#panel h1 {
 	font-size: 16px;
 }
 

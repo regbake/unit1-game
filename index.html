@@ -17,11 +17,13 @@
 	<div id="battlefield">
 		<div class="playerCards player2Field">
 		</div>
+
 		<div class="playerCards player1Field">
 		</div>
 	</div>
 
 	<div id="panel">
+		<h1>Dashboard</h1>
 		<button type="button" id="playCard">Play card</button>
 		<button type="button" id="drawCard" onclick="drawCard(player1)">Draw card</button>
 		<button type="button" id="tapCard" onclick="tapCard()">Tap/Untap card</button>
@@ -29,6 +31,10 @@
 		<button type="button" id="endTurn" onclick="endTurnFunc()">End Turn</button>
 		<h1 class="displayLife">P1 life: <span id="p1Life">20</span></h1>
 		<h1 class="displayLife">P2 life: <span id="p2Life">20</span></h1>
+
+		<div id="messageHolder">
+			<h1 id="messages">Game alerts...</h1>
+		</div>
 	</div>
 
 	<div id="showHand"></div>
