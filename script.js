@@ -141,19 +141,19 @@ var attack = function(creature) {
 	for (i=0; i<player2.cardsInPlay.length; i++) { //right now this attacks all the potential creatures... 
 		var creature2 = player2.cardsInPlay[i].name;
 
-		if (!player2.cardsInPlay[i].hasOwnProperty("mana") && creatureCheck) { //if card is not a land
+		if (!player2.cardsInPlay[i].hasOwnProperty("mana") && creatureCheck) { //if card does not have "mana," && there are creatures
 			//what if the other player only has lands on the field? 
 			if (player2.cardsInPlay[i].toughness > power) {
 				console.log(creature2 + "toughness > " + creature1 + " power; " + creature2 + " blocks successfully");
 				if (player2.cardsInPlay[i].power > toughness) {
-					console.log(creature2 + "power > "+creature1+" toughness, "+creature1+" dies");
+					console.log(creature2 + "power > "+ creature1 +" toughness, "+ creature1 +" dies");
 					player1.cardsInPlay.splice(creature1Position, 1); 
 					$("#"+creature.cardId+"").remove();
 					console.log("removed the creature from p1.cardsInPlay");
 					break;
 				}
 			} else if (player2.cardsInPlay[i].toughness < power) {
-				console.log("no blocking because "+creature2+" would die, p2 takes damage");
+				console.log("no blocking because "+ creature2 +" would die, p2 takes damage");
 				player2.lifeTotal -= power;
 				break;
 				if (player2.cardsInPlay[i].power > toughness) {
@@ -182,7 +182,7 @@ var attack = function(creature) {
 				console.log("did damage to player");
 				break;
 			}
-		} else {
+		} else if (!creatureCheck) {
 			player2.lifeTotal -= power;
 			console.log("no creatuers");
 			updateLifeTotals();
@@ -230,7 +230,47 @@ var player2Turn = function() {
 	drawCard(player2);
 	playLandAI();
 	playCreatureAI();
+	attackAI();
 	endTurnFunc();
+}
+
+var attackAI = function() {
+	var attackingCreatures = [];
+	//if this is the attack function for the AI, then what shoul dhappen inside it? 
+	//search player2.CardsInPlay.hasOwnProperty("hasDefender")
+	//what's the goal here, we can't attack with defenders, we can't attack with lands
+	
+	//the ai is going to attack with all available creatures on every turn
+	//make an array of attacking creatures? 
+
+	//that's the more critical thing that I need to figure out, how the player1 is going to decide blocking and the sort
+
+	//that's kind of the other thing to figure out as well, how am I going to decide about the blocking here? 
+
+	//so it's pretty easy to find out which creatures are going to attack, ever creature that isn't a wall, isn't a land, 
+	//and doesn't have summoning sickness will attack every turn. Right now all of the creatures that fit this criteria will
+	//be put into the array attackingCreatures
+
+	//this isn't a huge deal when it comes to a small amount of creatures, but it seems to me that player1 must to be able to choose 
+	//which creatuers to block
+
+	//funnel for the creatuers that are attack ready
+	for (i=0; i<player2.cardsInPlay.length; i++) {
+		if (!player2.cardsInPlay[i].hasOwnProperty("hasDefender") && !player2.cardsInPlay[i].hasOwnProperty("mana")) {
+			if (!player2.cardsInPlay[i].hasSickness) {
+				//card doesn't have summoning sickness, defender, or land
+				var currCard = player2.cardsInPlay[i];
+				
+				attackingCreatures.push(currCard);
+				
+				$("#" + currCard.cardId + "").addClass("rotated"); 
+
+
+			}
+		} else {
+			//ignore 
+		}
+	}
 }
 
 var playLandAI = function() {
@@ -282,6 +322,7 @@ var playCreatureAI = function() {
 }
 
 var untapLands = function() {
+
 	//untaps the rotated stuff, remove summoning sickness from the creatures
 	$(".player2Field").children("div").each(function(){
 		var currCardObj = findCard(player2.cardsInPlay, this.id).obj;
@@ -640,7 +681,7 @@ var allCreatures = [{
 	name: "Phantom Monster",
 	power: 3,
 	toughness: 3,
-	manaCost: 5, 
+	manaCost: 4, 
 	hasFlying: true,
 	hasSickness: true,
 	isTapped: false,
