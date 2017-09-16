@@ -120,8 +120,6 @@ var attack = function(creature) {
 	var creature1 = creature.name;
 	var creature1Position = findCard(player1.cardsInPlay, creature.cardId).position;
 
-	
-	console.log(creature1, "attacked with ", power);
 	//check the AI cards in play, does it have any creatures? 
 		//if no creatures then no creatures can block
 			//do damage to the player
@@ -132,24 +130,18 @@ var attack = function(creature) {
 		 for (j=0; j<player2.cardsInPlay.length; j++) {
 		if (player2.cardsInPlay[j].hasOwnProperty("mana")) {
 		// 		//there was a land
-		// 		console.log("land");
+				return false;
 		} else if (player2.cardsInPlay[j].hasOwnProperty("power")) {
 		 		return true; //a creature was found
 		 	}
 		}
 	}
 
-	if (creatureCheck) { //no creatures to block so deal damage directly
-		player2.lifeTotal -= power;
-		updateLifeTotals();
-	}
-		
-
 	//get player2 creatures
 	for (i=0; i<player2.cardsInPlay.length; i++) { //right now this attacks all the potential creatures... 
 		var creature2 = player2.cardsInPlay[i].name;
 
-		if (!player2.cardsInPlay[i].hasOwnProperty("mana")) { //if card is not a land
+		if (!player2.cardsInPlay[i].hasOwnProperty("mana") && creatureCheck) { //if card is not a land
 			//what if the other player only has lands on the field? 
 			if (player2.cardsInPlay[i].toughness > power) {
 				console.log(creature2 + "toughness > " + creature1 + " power; " + creature2 + " blocks successfully");
@@ -190,6 +182,10 @@ var attack = function(creature) {
 				console.log("did damage to player");
 				break;
 			}
+		} else {
+			player2.lifeTotal -= power;
+			console.log("no creatuers");
+			updateLifeTotals();
 		}
 	} 
 	updateLifeTotals(); 
