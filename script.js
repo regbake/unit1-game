@@ -141,7 +141,7 @@ var attack = function(creature) {
 	for (i=0; i<player2.cardsInPlay.length; i++) { //right now this attacks all the potential creatures... 
 		var creature2 = player2.cardsInPlay[i].name;
 
-		if (!player2.cardsInPlay[i].hasOwnProperty("mana") && creatureCheck) { //if card does not have "mana," && there are creatures
+		if (!player2.cardsInPlay[i].hasOwnProperty("mana")) { //if card does not have "mana," && there are creatures
 			//what if the other player only has lands on the field? 
 			if (player2.cardsInPlay[i].toughness > power) {
 				console.log(creature2 + "toughness > " + creature1 + " power; " + creature2 + " blocks successfully");
@@ -278,9 +278,15 @@ var attackAI = function() {
 			$("#messages").text(element.name + " is attacking, block with:");
 
 			for (j=0; j<potentialBlockers.length; j++) {
-				$("#messageHolder").append("<input type='radio' name='blockers' value="+potentialBlockers[j].cardId+">" + potentialBlockers[j].name + "<br>");
-				$("#messageHolder").append("<button type='button' id='chooseBlock' onclick=''>Block</button>");
-				$("#messageHolder").append("<button type='button' id='chooseDamage' onclick=''>DoNotBlock</button>");
+					//THE CURRENT GOAL IS TO FIGURE OUT THIS SEQUENCE BETWEEN CLICKING THE THING AND GETTING IT'S VALUE
+					//LET THIS CHILL FOR A FEW AND THEN COME BACK TO IT
+
+				//the value of this should be something else... 
+				
+
+				$("#messageHolder").append("<input type='radio' name='blockers' value="+potentialBlockers[j].cardId+" onclick=startBlock()>" + potentialBlockers[j].name + "<br>");
+
+				var selectedVal = $("input[name=blockers]:checked").val();
 			}
 		})
 
@@ -291,6 +297,24 @@ var attackAI = function() {
 	//okay, so at this point we have all of the attack ready creatures tapped, and stored in the array attackingCreatures
 	//so ho
 
+}
+
+var startBlock = function() {
+	console.log("The block function workd");
+	
+
+	$("#messageHolder").append("<button type='button' id='chooseBlock' onclick=blockFunc()>Block</button>");
+	$("#messageHolder").append("<button type='button' id='chooseDamage' onclick=damageFunc()>DoNotBlock</button>");
+
+}
+
+var blockFunc = function() {
+	console.log("run the math for the blocking of this");
+}
+
+var damageFunc = function() {
+	console.log("take damage from the attacking creature");
+	//I think we just need a creature ID that is doing the attacking, or save that globally? 
 }
 
 // var removeAttacking = function() {
